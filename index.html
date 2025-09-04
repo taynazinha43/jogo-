@@ -1,159 +1,52 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Jogo de Moto</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Página Inicial</title>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      background: #87CEEB;
-      overflow: hidden;
-      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #4b0082, #800080);
+      font-family: Arial, sans-serif;
+      color: #fff;
     }
-    #gameCanvas {
-      display: block;
-      background: #d0f4f7;
-      margin: 20px auto;
-      border: 2px solid #333;
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-jogar {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background-color: #9b30ff;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.25rem;
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-jogar:hover {
+      background-color: #7a1fb2;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="800" height="400"></canvas>
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // Propriedades da moto
-    const bike = {
-      x: 50,
-      y: canvas.height - 60,
-      width: 50,
-      height: 30,
-      velY: 0,
-      gravity: 1.2,
-      jumpPower: 18,
-      jumping: false
-    };
-
-    // Obstáculos
-    const obstacles = [];
-    let frames = 0;
-    let speed = 6;
-    let score = 0;
-    let gameOver = false;
-
-    // Captura de teclado
-    document.addEventListener('keydown', e => {
-      if ((e.code === 'Space' || e.code === 'ArrowUp') && !bike.jumping) {
-        bike.velY = -bike.jumpPower;
-        bike.jumping = true;
-      }
-    });
-
-    // Função de atualização
-    function update() {
-      if (gameOver) return;
-      frames++;
-      score++;
-
-      // Gravidade e salto
-      bike.velY += bike.gravity;
-      bike.y += bike.velY;
-      if (bike.y >= canvas.height - bike.height - 30) {
-        bike.y = canvas.height - bike.height - 30;
-        bike.velY = 0;
-        bike.jumping = false;
-      }
-
-      // Geração de obstáculos
-      if (frames % 90 === 0) {
-        const size = 30 + Math.random() * 20;
-        obstacles.push({
-          x: canvas.width,
-          y: canvas.height - size - 30,
-          width: size,
-          height: size
-        });
-      }
-
-      // Atualiza obstáculos
-      for (let i = 0; i < obstacles.length; i++) {
-        const obs = obstacles[i];
-        obs.x -= speed;
-        // Colisão
-        if (
-          bike.x < obs.x + obs.width &&
-          bike.x + bike.width > obs.x &&
-          bike.y < obs.y + obs.height &&
-          bike.y + bike.height > obs.y
-        ) {
-          gameOver = true;
-        }
-      }
-
-      // Remove obstáculos fora da tela
-      while (obstacles.length && obstacles[0].x < -50) {
-        obstacles.shift();
-      }
-
-      // Aumenta velocidade gradualmente
-      if (frames % 300 === 0) speed += 0.5;
-    }
-
-    // Função de desenho
-    function draw() {
-      // Fundo
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Chão
-      ctx.fillStyle = '#654321';
-      ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
-
-      // Moto
-      ctx.fillStyle = '#ff0000';
-      ctx.fillRect(bike.x, bike.y, bike.width, bike.height);
-
-      // Rodas
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.arc(bike.x + 10, bike.y + bike.height, 8, 0, Math.PI * 2);
-      ctx.arc(bike.x + bike.width - 10, bike.y + bike.height, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Obstáculos
-      ctx.fillStyle = '#228B22';
-      obstacles.forEach(obs => {
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-      });
-
-      // Pontuação
-      ctx.fillStyle = '#000';
-      ctx.font = '20px sans-serif';
-      ctx.fillText('Pontuação: ' + score, 10, 25);
-
-      // Game Over
-      if (gameOver) {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#fff';
-        ctx.font = '40px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 20);
-        ctx.font = '20px sans-serif';
-        ctx.fillText('Pressione F5 para reiniciar', canvas.width / 2, canvas.height / 2 + 20);
-      }
-    }
-
-    // Loop principal
-    function loop() {
-      update();
-      draw();
-      requestAnimationFrame(loop);
-    }
-
-    loop();
-  </script>
+  <div class="container">
+    <h1>Bem-vindo ao Jogo</h1>
+    <a href="jg.html" class="btn-jogar">Aqui começa o jogo</a>
+  </div>
 </body>
 </html>

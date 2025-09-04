@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo de Carro Voador</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: #87CEEB;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    #gameCanvas {
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #333;
+      background: linear-gradient(to bottom, #87CEEB 0%, #fff 80%);
+    }
+    #info {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">Use Espaço ou &#8593; para subir. Pontuação: <span id="score">0</span></div>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+
+    // Estado do jogo
+    let frames = 0;
+    let score = 0;
+    let speed = 3;
+    let gameOver = false;
+
+    // Carro voador
+    const car = {
+      x: 100,
+      y: canvas.height / 2,
+      width: 60,
+      height: 30,
+      velY: 0,
+      gravity: 0.4,
+      lift: -8
+    };
+
+    // Lista de obstáculos
+    const obstacles = [];
+
+    // Controle de voo
+    document.addEventListener('keydown', e => {
+      if ((e.code === 'Space' || e.code === 'ArrowUp') && !gameOver) {
+        car.velY = car.lift;
+      }
+    });
+
+    // Atualiza estado a cada frame
+    function update() {
+      if (gameOver) return;
+      frames++;
+      score = Math.floor(frames / 5);
+      scoreEl.textContent = score;
+
+      // Física do carro
+      car.velY += car.gravity;
+      car.y += car.velY;
+      if (car.y + car.height > canvas.height) {
+        car.y = canvas.height - car.height;
+        car.velY = 0;
+      }
+      if (car.y < 0) {
+        car.y = 0;
+        car.velY = 0;
+      }
+
+      // Gera obstáculos
+      if (frames % 90 === 0) {
+        const gap = 120;
+        const topH = 50 + Math.random() * (canvas.height - gap - 100);
+        obstacles.push({
+          x: canvas.width,
+          y: 0,
+          width: 40,
+          height: topH
+        });
+        obstacles.push({
+          x: canvas.width,
+          y: topH + gap,
+          width: 40,
+          height: canvas.height - topH - gap
+        });
+      }
+
+      // Move obstáculos e detecta colisões
+      obstacles.forEach(obs => {
+        obs.x -= speed;
+        if (
+          car.x < obs.x + obs.width &&
+          car.x + car.width > obs.x &&
+          car.y < obs.y + obs.height &&
+          car.y + car.height > obs.y
+        ) {
+          gameOver = true;
+        }
+      });
+
+      // Remove obstáculos que saíram da tela
+      while (obstacles.length && obstacles[0].x < -50) {
+        obstacles.shift();
+      }
+
+      // Aumenta velocidade gradualmente
+      if (frames % 600 === 0) {
+        speed += 0.5;
+      }
+    }
+
+    // Desenha cada frame
+    function draw() {
+      // Céu
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Carro voador (retângulo com rodas estilizadas)
+      ctx.fillStyle = '#FF4500';
+      ctx.fillRect(car.x, car.y, car.width, car.height);
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(car.x + 10, car.y + car.height, 8, 0, Math.PI * 2);
+      ctx.arc(car.x + car.width - 10, car.y + car.height, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Obstáculos (tubos de cima e de baixo)
+      ctx.fillStyle = '#228B22';
+      obstacles.forEach(obs => {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      });
+
+      // Tela de Game Over
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = '40px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = '20px sans-serif';
+        ctx.fillText('Recarregue a página para jogar novamente', canvas.width / 2, canvas.height / 2 + 20);
+      }
+    }
+
+    // Loop principal
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script><div class="container">
+    <h1>Bem-vindo ao Jogo</h1>
+    <a href="index.html" class="btn-jogar">inicio</a>
+  </div>
+</body>
+</html>
